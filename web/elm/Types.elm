@@ -1,9 +1,18 @@
 module Types exposing (..)
 
+import Keyboard.Extra
+import Sprite
+import Map
+import Time exposing (Time)
+
+
 type alias Model =
-  { test : String
+  { sprite : Sprite.Model
+  , map : Map.Model
+  , keyboard : Keyboard.Extra.Model
   }
 
-type Msg =
-  Foo
-  | Bar
+type Msg
+    = Tick Time
+    | KeyPress Keyboard.Extra.Msg
+    | Nothing

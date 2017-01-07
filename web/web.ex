@@ -16,23 +16,11 @@ defmodule MazesForProgrammers.Web do
   below.
   """
 
-  def model do
-    quote do
-      use Ecto.Schema
-
-      import Ecto
-      import Ecto.Changeset
-      import Ecto.Query
-    end
-  end
-
   def controller do
     quote do
       use Phoenix.Controller
 
       alias MazesForProgrammers.Repo
-      import Ecto
-      import Ecto.Query
 
       import MazesForProgrammers.Router.Helpers
       import MazesForProgrammers.Gettext
@@ -66,8 +54,6 @@ defmodule MazesForProgrammers.Web do
       use Phoenix.Channel
 
       alias MazesForProgrammers.Repo
-      import Ecto
-      import Ecto.Query
       import MazesForProgrammers.Gettext
     end
   end
