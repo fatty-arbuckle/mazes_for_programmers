@@ -8,3 +8,12 @@ config :mazes_for_programmers, MazesForProgrammers.Endpoint,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+
+#Configure your database
+config :mazes_for_programmers, MazesForProgrammers.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  username: "postgres",
+  password: "postgres",
+  database: "mazes_for_programmers_test",
+  hostname: "localhost",
+  pool: Ecto.Adapters.SQL.Sandbox

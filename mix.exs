@@ -19,7 +19,7 @@ defmodule MazesForProgrammers.Mixfile do
   def application do
     [mod: {MazesForProgrammers, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger,
-                    :gettext, :postgrex]]
+                    :gettext, :postgrex, :phoenix_ecto]]
   end
 
   # Specifies which paths to compile per environment.
@@ -34,6 +34,7 @@ defmodule MazesForProgrammers.Mixfile do
      {:phoenix_pubsub, "~> 1.0"},
      {:postgrex, ">= 0.0.0"},
      {:phoenix_html, "~> 2.6"},
+     {:phoenix_ecto, "~> 3.0"},
      {:phoenix_live_reload, "~> 1.0", only: :dev},
      {:gettext, "~> 0.11"},
      {:cowboy, "~> 1.0"}]
@@ -46,5 +47,8 @@ defmodule MazesForProgrammers.Mixfile do
   #
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
+    ["ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
+     "ecto.reset": ["ecto.drop", "ecto.setup"],
+     "test": ["ecto.create --quiet", "ecto.migrate", "test"]]
   end
 end
