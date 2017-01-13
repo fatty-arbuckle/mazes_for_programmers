@@ -20,24 +20,12 @@ defmodule MazesForProgrammers.ChannelCase do
       # Import conveniences for testing with channels
       use Phoenix.ChannelTest
 
-      alias MazesForProgrammers.Repo
-      import Ecto
-      import Ecto.Changeset
-      import Ecto.Query
-
-
       # The default endpoint for testing
       @endpoint MazesForProgrammers.Endpoint
     end
   end
 
-  setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(MazesForProgrammers.Repo)
-
-    unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(MazesForProgrammers.Repo, {:shared, self()})
-    end
-
+  setup _tags do
     :ok
   end
 end

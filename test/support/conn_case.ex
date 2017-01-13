@@ -20,11 +20,6 @@ defmodule MazesForProgrammers.ConnCase do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
 
-      alias MazesForProgrammers.Repo
-      import Ecto
-      import Ecto.Changeset
-      import Ecto.Query
-
       import MazesForProgrammers.Router.Helpers
 
       # The default endpoint for testing
@@ -32,13 +27,7 @@ defmodule MazesForProgrammers.ConnCase do
     end
   end
 
-  setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(MazesForProgrammers.Repo)
-
-    unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(MazesForProgrammers.Repo, {:shared, self()})
-    end
-
+  setup _tags do
      {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 
