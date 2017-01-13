@@ -20,7 +20,10 @@ defmodule MazesForProgrammers.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", MazesForProgrammers do
-  #   pipe_through :api
-  # end
+  scope "/api", MazesForProgrammers do
+    pipe_through :api
+    resources "/generators", GeneratorController, only: [:index]
+    resources "/mazes/:generator", MazeController, only: [:index]
+    resources "/mazes/:generator/:width/:height", MazeController, only: [:index]
+  end
 end

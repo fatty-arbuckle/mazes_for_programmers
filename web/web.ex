@@ -16,6 +16,9 @@ defmodule MazesForProgrammers.Web do
   below.
   """
 
+  def model do
+  end
+
   def controller do
     quote do
       use Phoenix.Controller
