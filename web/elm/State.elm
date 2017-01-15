@@ -52,10 +52,10 @@ update msg model =
 updateSprite : Sprite.Msg -> Model -> Model
 updateSprite msg model =
     let
-        sprite' =
+        sprite_ =
             Sprite.update msg model.sprite
     in
-        { model | sprite = sprite' }
+        { model | sprite = sprite_ }
 
 
 -- Move to Map.elm
