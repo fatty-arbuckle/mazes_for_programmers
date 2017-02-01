@@ -24,29 +24,26 @@ initModel keyboard =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        Tick timeDelta ->
-            ( model
-                |> updateMap timeDelta
-                |> updateSprite (Sprite.Tick timeDelta)
-            , Cmd.none
-            )
+  case msg of
+    Tick timeDelta ->
+      ( model
+        |> updateMap timeDelta
+        |> updateSprite (Sprite.Tick timeDelta)
+      , Cmd.none
+      )
 
-        KeyPress key ->
-            let
-                ( keyboard, _ ) =
-                    Keyboard.Extra.update key model.keyboard
+    KeyPress key ->
+      let
+        ( keyboard, _ ) = Keyboard.Extra.update key model.keyboard
+        direction = Keyboard.Extra.arrows keyboard
+      in
+        ( { model | keyboard = keyboard }
+          |> updateSprite (Sprite.Direction direction)
+        , Cmd.none
+      )
 
-                direction =
-                    Keyboard.Extra.arrows keyboard
-            in
-                ( { model | keyboard = keyboard }
-                    |> updateSprite (Sprite.Direction direction)
-                , Cmd.none
-                )
-
-        Types.Nothing ->
-            ( model, Cmd.none )
+    Types.Nothing ->
+      ( model, Cmd.none )
 
 -- Move to Sprite.elm
 updateSprite : Sprite.Msg -> Model -> Model
