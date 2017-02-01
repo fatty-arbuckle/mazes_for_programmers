@@ -6,19 +6,31 @@ import Sprite
 import Map
 import Time exposing (Time)
 import AnimationFrame
+import Json.Decode
+import Http
+import Matrix
 
 init : ( Model, Cmd Msg)
 init =
   let
     ( initialKeyboard, keyboardCmd ) = Keyboard.Extra.init
   in
-    ( (initModel initialKeyboard), Cmd.map KeyPress keyboardCmd )
+    ( ( initModel initialKeyboard ), Cmd.map KeyPress keyboardCmd )
 
 
 
 initModel : Keyboard.Extra.Model -> Model
 initModel keyboard =
-    Model Sprite.init Map.init keyboard
+  let
+    generators = []
+  in
+    Model
+      Sprite.init
+      Map.init
+      keyboard
+      generators
+      []
+      Map.initMaze
 
 
 
@@ -44,6 +56,31 @@ update msg model =
 
     Types.Nothing ->
       ( model, Cmd.none )
+
+    LoadGenerators ->
+      ( model, loadGenerators )
+
+    ReceivedGenerators (Ok generators) ->
+      ( { model | generators = (model.generators ++ generators) }, Cmd.none )
+
+    ReceivedGenerators (Err error) ->
+      let
+        message = httpErrorMessage error
+      in
+        ( { model | errors = model.errors ++ [message] }, Cmd.none )
+
+    GenerateMaze generator ->
+        ( model, generateMaze generator )
+
+    ReceivedMaze (Ok maze) ->
+        ( { model | maze = maze }, Cmd.none )
+
+    ReceivedMaze (Err error) ->
+      let
+        message = httpErrorMessage error
+      in
+        ( { model | errors = model.errors ++ [message] }, Cmd.none )
+
 
 -- Move to Sprite.elm
 updateSprite : Sprite.Msg -> Model -> Model
@@ -83,6 +120,52 @@ updateMap dt model =
     in
       { model | map = Map.update action map }
 
+
+httpErrorMessage : Http.Error -> String
+httpErrorMessage error =
+  case error of
+    Http.Timeout -> "request timed out"
+    Http.NetworkError -> "a network error occurred"
+    Http.BadPayload s _ -> "payload error: " ++ s
+    Http.BadStatus _ -> "bad status!"
+    Http.BadUrl _ -> "bad status!"
+
+
+
+loadGenerators : Cmd Msg
+loadGenerators =
+  let
+    url = "http://localhost:4000/api/generators"
+  in
+    Http.send ReceivedGenerators (Http.get url decodeGenerators)
+
+decodeGenerators : Json.Decode.Decoder (List String)
+decodeGenerators =
+  Json.Decode.at ["data"] (Json.Decode.list Json.Decode.string)
+
+
+generateMaze: String -> Cmd Msg
+generateMaze generator =
+  let
+    url = "http://localhost:4000/api/mazes/" ++ generator
+  in
+    Http.send ReceivedMaze (Http.get url decodeMaze)
+
+decodeMaze : Json.Decode.Decoder Map.Maze
+decodeMaze =
+  Json.Decode.at ["data"] decodeMap
+
+decodeMap : Json.Decode.Decoder Map.Maze
+decodeMap =
+  Json.Decode.map4 Map.Maze
+    (Json.Decode.at ["width"] Json.Decode.int)
+    (Json.Decode.at ["height"] Json.Decode.int)
+    (Json.Decode.at ["generator"] Json.Decode.string)
+    (Json.Decode.at ["maze"] decodeMazeData)
+
+decodeMazeData : Json.Decode.Decoder (Matrix.Matrix Int)
+decodeMazeData =
+  Json.Decode.array (Json.Decode.array Json.Decode.int)
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =

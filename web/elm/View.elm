@@ -12,15 +12,37 @@ import Sprite
 view : Model -> Html Msg
 view model =
   div []
-    -- [ div []
-    --   [ Html.h2 [] [Html.text model.httpCats.topic]
-    --   , Html.button [ Html.Events.onClick HttpCats.MorePlease ] [ Html.text "More Please!" ]
-    --   , Html.br [] []
-    --   , Html.img [Html.Attributes.src model.httpCats.gifUrl] []
-    --   ]
-    -- , Html.map (\_ -> Types.Nothing) (HttpCats.view model.httpCats)
-    [ div [ style [ ( "width", (toString Map.width) ++ "px" ) ] ]
+    [ renderErrors model.errors
+
+    , renderGenerators model.generators
+
+    -- render map
+    , div [ style [ ( "width", (toString Map.width) ++ "px" ) ] ]
       [ Html.map (\_ -> Types.Nothing) (Map.view model.map)
       , Html.map (\_ -> Types.Nothing) (Sprite.view model.sprite)
       ]
+
+    -- maze data
+    , div [] [ Html.map (\_ -> Types.Nothing) (Map.renderMaze model.maze) ]
     ]
+
+renderErrors : List String -> Html Msg
+renderErrors errors =
+  div [] (List.map renderError errors)
+
+renderError : String -> Html Msg
+renderError error =
+  div [ ] [ Html.text error ]
+
+
+renderGenerators : List String -> Html Msg
+renderGenerators generators =
+  case generators of
+    [] ->
+      Html.button [ Html.Events.onClick LoadGenerators ] [ Html.text "Load Generators" ]
+    _ ->
+      div [] (List.map renderGenerator generators)
+
+renderGenerator : String -> Html Msg
+renderGenerator generator =
+  Html.button [ Html.Events.onClick (GenerateMaze generator) ] [ Html.text generator ]
