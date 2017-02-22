@@ -17,13 +17,10 @@ view model =
     , renderGenerators model.generators
 
     -- render map
-    , div [ style [ ( "width", (toString Map.width) ++ "px" ) ] ]
+    , div [ style [ ( "width", (toString model.map.visibleWidth) ++ "px" ) ] ]
       [ Html.map (\_ -> Types.Nothing) (Map.view model.map)
       , Html.map (\_ -> Types.Nothing) (Sprite.view model.sprite)
       ]
-
-    -- maze data
-    , div [] [ Html.map (\_ -> Types.Nothing) (Map.renderMaze model.maze) ]
     ]
 
 renderErrors : List String -> Html Msg

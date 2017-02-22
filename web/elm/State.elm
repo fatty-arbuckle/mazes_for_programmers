@@ -9,6 +9,7 @@ import AnimationFrame
 import Json.Decode
 import Http
 import Matrix
+import Array
 
 init : ( Model, Cmd Msg)
 init =
@@ -23,10 +24,11 @@ initModel : Keyboard.Extra.Model -> Model
 initModel keyboard =
   let
     generators = []
+    mapModel = Map.init (Array.fromList [])
   in
     Model
-      Sprite.init
-      Map.init
+      (Sprite.init mapModel)
+      mapModel
       keyboard
       generators
       []
@@ -70,10 +72,13 @@ update msg model =
         ( { model | errors = model.errors ++ [message] }, Cmd.none )
 
     GenerateMaze generator ->
-        ( model, generateMaze generator )
+      ( model, generateMaze generator )
 
     ReceivedMaze (Ok maze) ->
-        ( { model | maze = maze }, Cmd.none )
+      let
+        newMap = Map.init maze.mapData
+      in
+        ( { model | map = newMap, sprite = Sprite.init newMap, maze = maze }, Cmd.none )
 
     ReceivedMaze (Err error) ->
       let
@@ -100,7 +105,7 @@ updateMap dt model =
             ( model.sprite.x, model.sprite.y, model.sprite.vx, model.sprite.vy, model.map )
 
         ( bottomWall, leftWall, rightWall, topWall ) =
-            ( 0, 0, (toFloat Map.width), (toFloat Map.height) )
+            ( 0, 0, (toFloat model.map.visibleWidth), (toFloat model.map.visibleHeight) )
 
         ( movingUp, movingDown, movingRight, movingLeft ) =
             ( vy > 0, vy < 0, vx > 0, vx < 0 )
@@ -163,7 +168,7 @@ decodeMap =
     (Json.Decode.at ["generator"] Json.Decode.string)
     (Json.Decode.at ["maze"] decodeMazeData)
 
-decodeMazeData : Json.Decode.Decoder (Matrix.Matrix Int)
+decodeMazeData : Json.Decode.Decoder (Array.Array (Array.Array Int))
 decodeMazeData =
   Json.Decode.array (Json.Decode.array Json.Decode.int)
 

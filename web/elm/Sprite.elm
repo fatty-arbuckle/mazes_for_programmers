@@ -17,6 +17,7 @@ type alias Model =
   , dir : Direction
   , orientation : Orientation
   , frame : Int
+  , mapModel : Map.Model
   }
 
 
@@ -30,8 +31,8 @@ type Orientation
   | Away
 
 
-init =
-  Model Map.halfWidth Map.halfHeight 0 0 Left Toward 0
+init mapModel =
+  Model mapModel.halfWidth mapModel.halfHeight 0 0 Left Toward 0 mapModel
 
 
 
@@ -101,8 +102,8 @@ setDirection { x, y } model =
 updatePosition : Time -> Model -> Model
 updatePosition dt ({ x, y, vx, vy } as model) =
   { model
-    | x = clamp 0 ((toFloat Map.width) - 32) (x + dt * vx)
-    , y = clamp 32 (toFloat Map.height) (y + dt * vy)
+    | x = clamp 0 ((toFloat model.mapModel.visibleWidth) - 32) (x + dt * vx)
+    , y = clamp 32 (toFloat model.mapModel.visibleHeight) (y + dt * vy)
   }
 
 
@@ -116,7 +117,7 @@ updateFrame model =
 
 
 view : Model -> Html Msg
-view { x, y, vx, vy, dir, orientation, frame } =
+view { x, y, vx, vy, dir, orientation, frame, mapModel } =
   let
     beeImage =
       case ( dir, orientation, frame ) of
@@ -131,6 +132,18 @@ view { x, y, vx, vy, dir, orientation, frame } =
 
         ( _, _, _ ) -> southWestBee1
   in
+    case ((mapModel.mapRows < 1) || (mapModel.mapCols < 1)) of
+      True ->
+        renderEmptySprite
+      False ->
+        renderSprite x y beeImage
+
+renderEmptySprite : Html Msg
+renderEmptySprite =
+  div [] []
+
+-- renderSprite : Float Float (Html Msg) -> Html Msg ??
+renderSprite x y beeImage =
     div
       [ style
         [ ( "width", "32px" )
