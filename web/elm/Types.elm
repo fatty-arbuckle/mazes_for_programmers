@@ -14,6 +14,8 @@ type alias Model =
   , generators : List String
   , errors : List String
   , maze : Map.Maze
+  , rows : Int
+  , columns : Int
   }
 
 type Msg
@@ -24,3 +26,5 @@ type Msg
     | ReceivedGenerators (Result Http.Error (List String))
     | GenerateMaze String
     | ReceivedMaze (Result Http.Error Map.Maze)
+    | InputColumns String
+    | InputRows String

@@ -33,6 +33,8 @@ initModel keyboard =
       generators
       []
       Map.initMaze
+      10
+      10
 
 
 
@@ -72,19 +74,33 @@ update msg model =
         ( { model | errors = model.errors ++ [message] }, Cmd.none )
 
     GenerateMaze generator ->
-      ( model, generateMaze generator )
+      ( model, (generateMaze generator model.rows model.columns) )
 
     ReceivedMaze (Ok maze) ->
       let
         newMap = Map.init maze.mapData
       in
-        ( { model | map = newMap, sprite = Sprite.init newMap, maze = maze }, Cmd.none )
+        ( { model | map = newMap, sprite = Sprite.init newMap, maze = maze, errors = [] }, Cmd.none )
 
     ReceivedMaze (Err error) ->
       let
         message = httpErrorMessage error
       in
         ( { model | errors = model.errors ++ [message] }, Cmd.none )
+
+    InputColumns columnString ->
+      case (String.toInt columnString) of
+        Ok cols ->
+          ( { model | columns = cols }, Cmd.none )
+        Err _ ->
+          ( { model | errors = model.errors ++ ["Invalid column count"] }, Cmd.none )
+
+    InputRows rowString ->
+      case (String.toInt rowString) of
+        Ok rows ->
+          ( { model | rows = rows }, Cmd.none )
+        Err _ ->
+          ( { model | errors = model.errors ++ ["Invalid row count"] }, Cmd.none )
 
 
 -- Move to Sprite.elm
@@ -149,10 +165,10 @@ decodeGenerators =
   Json.Decode.at ["data"] (Json.Decode.list Json.Decode.string)
 
 
-generateMaze: String -> Cmd Msg
-generateMaze generator =
+generateMaze: String -> Int -> Int -> Cmd Msg
+generateMaze generator rows columns =
   let
-    url = "http://localhost:4000/api/mazes/" ++ generator
+    url = "http://localhost:4000/api/mazes/" ++ generator ++ "/" ++ (toString rows) ++ "/" ++ (toString columns)
   in
     Http.send ReceivedMaze (Http.get url decodeMaze)
 
