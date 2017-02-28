@@ -7,12 +7,12 @@ defmodule MazesForProgrammers.MazeController do
     width = convert_dimension(str_width)
     height = convert_dimension(str_height)
     maze_data = MazesForProgrammers.MazeGenerator.generate(generator, width, height)
-    reply(conn, generator, width, height, maze_data)
+    reply(conn, generator, maze_data)
   end
 
   def index(conn, %{"generator" => generator}) do
     maze_data = MazesForProgrammers.MazeGenerator.generate(generator, @default_dimension, @default_dimension)
-    reply(conn, generator, @default_dimension, @default_dimension, maze_data)
+    reply(conn, generator, maze_data)
   end
 
   def index(conn, _params) do
@@ -20,9 +20,9 @@ defmodule MazesForProgrammers.MazeController do
     |> render("400.json", %{message: "you must specify a generator"})
   end
 
-  defp reply(conn, generator, width, height, maze_data) do
+  defp reply(conn, generator, maze_data) do
     case maze_data do
-      {:ok, data} ->
+      {:ok, data, width, height} ->
         render(conn, "index.json", mazes: %{
           generator: generator,
           width: width,

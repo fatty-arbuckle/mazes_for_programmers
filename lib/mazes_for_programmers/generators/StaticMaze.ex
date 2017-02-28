@@ -12,7 +12,9 @@ defmodule MazesForProgrammers.MazeGenerator.StaticMaze do
         [ 1, 0, 1, 0, 1, 1, 1, 0, 1, 1 ],
         [ 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 ],
         [ 1, 1, 1, 1, 1, 1, 1, 1, 0, 1 ]
-      ]
+      ],
+      10,
+      10
     }
   end
 

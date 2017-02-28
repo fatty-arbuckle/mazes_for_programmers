@@ -123,7 +123,8 @@ defmodule Maze do
 
   def to_int_matrix(maze) when is_map(maze) do
     {cols, rows} = dimentions(maze)
-    {:ok, server} = Matrix.create(2*rows + 1, 2*cols + 1, 1)
+    {nh, nw} = {2*rows + 1, 2*cols + 1}
+    {:ok, server} = Matrix.create(nh, nw, 1)
 
     for {row_index, row} <- maze do
       for {col_index, cell} <- row do
@@ -139,7 +140,7 @@ defmodule Maze do
 
     result = Matrix.to_list(server)
     Matrix.destroy(server)
-    result
+    {result, nw, nh}
   end
 
   defp set_int_maze(cell, _server, _x, _y) when is_nil(cell) do

@@ -25,7 +25,8 @@ defmodule MazesForProgrammers.MazeGenerator.BinaryTreeMaze do
       end
     end
 
-    { :ok, Maze.to_int_matrix(maze) }
+    {matrix, w, h} = Maze.to_int_matrix(maze)
+    { :ok, matrix, w, h }
   end
 
 end
