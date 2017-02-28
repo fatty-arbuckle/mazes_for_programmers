@@ -1,5 +1,5 @@
 defmodule MazesForProgrammers.MazeGenerator do
-  @maze_generators [ "static", "random" ]
+  @maze_generators [ "static", "random", "binarytree" ]
 
   def maze_generators do
     @maze_generators
@@ -11,6 +11,10 @@ defmodule MazesForProgrammers.MazeGenerator do
 
   def generate("random", width, height) do
     MazesForProgrammers.MazeGenerator.RandomMaze.generate(width, height)
+  end
+
+  def generate("binarytree", width, height) do
+    MazesForProgrammers.MazeGenerator.BinaryTreeMaze.generate(width, height)
   end
 
   def generate(generator, _width, _height) do
