@@ -24,6 +24,12 @@ defmodule Maze do
   # above/below/left/right are for finding neighbors regardless
   #   of the connections
 
+  def above?(maze, pid) when is_pid(pid) do
+    case find_by_pid(maze, pid) do
+      {:ok, x, y} -> above?(maze, x, y)
+      {:error, _, _} -> nil
+    end
+  end
   def above?(maze, x, y) when y > 0 do
     maze[y - 1][x]
   end
@@ -45,6 +51,12 @@ defmodule Maze do
     nil
   end
 
+  def right?(maze, pid) when is_pid(pid) do
+    case find_by_pid(maze, pid) do
+      {:ok, x, y} -> right?(maze, x, y)
+      {:error, _, _} -> nil
+    end
+  end
   def right?(maze, x, y) do
     case y <= (Enum.count(maze[y]) - 2) do
       true -> maze[y][x + 1]
@@ -122,7 +134,7 @@ defmodule Maze do
   end
 
   def to_int_matrix(maze) when is_map(maze) do
-    {cols, rows} = dimentions(maze)
+    {cols, rows} = dimensions(maze)
     {nh, nw} = {2*rows + 1, 2*cols + 1}
     {:ok, server} = Matrix.create(nh, nw, 1)
 
@@ -149,10 +161,35 @@ defmodule Maze do
     Matrix.set(server, x, y, 0)
   end
 
-  defp dimentions(maze) when is_map(maze) do
+  defp dimensions(maze) when is_map(maze) do
     rows = Enum.count(maze)
     cols = Enum.count(maze[0])
     {cols, rows}
+  end
+
+  defp find_by_pid(maze, pid) when is_pid(pid) do
+    matches = for {row_index, row} <- maze do
+      match = for {col_index, cell} <- row do
+        if cell == pid do
+          {col_index, row_index}
+        end
+      end
+      Enum.filter(match, fn(x) ->
+        x != nil
+      end)
+    end
+
+    result = Enum.filter(matches, fn(x) ->
+      x != []
+    end)
+
+    if !Enum.empty?(result) do
+      {:ok, inner} = Enum.fetch(result, 0)
+      {:ok, {x, y}} = Enum.fetch(inner, 0)
+      {:ok, x, y}
+    else
+      {:error, 0, 0}
+    end
   end
 
   defp do_from_list(list, map \\ %{}, index \\ 0)

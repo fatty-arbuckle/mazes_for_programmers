@@ -11,6 +11,16 @@ defmodule MazesForProgrammers.MazeTest do
     {:ok, [raw_data: raw_data]}
   end
 
+  test "test by pid", context do
+    maze = Maze.from_list(context[:raw_data])
+
+    assert maze[0][1] == Maze.above?(maze, maze[1][1])
+    assert nil == Maze.above?(maze, maze[0][1])
+
+    assert maze[1][2] == Maze.right?(maze, maze[1][1])
+    assert nil == Maze.right?(maze, maze[1][2])
+  end
+
   test "test maze from list", context do
     maze = Maze.from_list(context[:raw_data])
 
@@ -115,7 +125,7 @@ defmodule MazesForProgrammers.MazeTest do
     Maze.make_path(:south, maze, 2, 0)
     Maze.make_path(:south, maze, 2, 1)
 
-    expected = [
+    expected = {[
       [ 1, 1, 1, 1, 1, 1, 1 ],
       [ 1, 0, 1, 0, 0, 0, 1 ],
       [ 1, 0, 1, 0, 1, 0, 1 ],
@@ -123,7 +133,7 @@ defmodule MazesForProgrammers.MazeTest do
       [ 1, 0, 1, 0, 1, 0, 1 ],
       [ 1, 0, 0, 0, 1, 0, 1 ],
       [ 1, 1, 1, 1, 1, 1, 1 ],
-    ]
+    ], 7, 7}
 
     assert expected == Maze.to_int_matrix maze
   end
